@@ -1198,7 +1198,7 @@ async function doTask(){
   const u=STATE.user;
   const today=new Date().toDateString();
   if(u.taskDone&&u.taskDate===today)return;
-  const msg=encodeURIComponent(`🌟 Olá! Junta-te ao *XitiqueMZ* — clube de poupança digital!\n\n💰 Ganha 10% ao dia\n✅ Código: *${u.code}*\n🔗 https://sasolmozambique-q0qu.onrender.com/`);
+  const msg=encodeURIComponent(`🌟 Olá! Junta-te ao *XitiqueMZ* — clube de poupança digital!\n\n💰 Ganha 10% ao dia\n✅ Código: *${u.code}*\n🔗 https://xitiquemz-j2bx.onrender.com/`);
   window.open(`https://wa.me/?text=${msg}`,'_blank');
   u.taskDone=true;u.taskDate=today;u.balance+=30;u.totalEarned+=30;
   await updateUserInFirebase(u.id,{taskDone:true,taskDate:today,balance:u.balance,totalEarned:u.totalEarned});
@@ -1369,11 +1369,11 @@ function renderFeed(){
 // PROFILE ACTIONS
 // ════════════════════════════════════════════
 function joinGroup(){window.open(GROUP_LINK,'_blank');}
-function shareWA(){const u=STATE.user;const msg=encodeURIComponent(`🌟 Olá! Junta-te ao *XitiqueMZ* — clube de poupança digital!\n\n💰 Ganha 10% ao dia\n✅ Código: *${u.code}*\n🔗 https://sasolmozambique-q0qu.onrender.com/`);window.open(`https://wa.me/?text=${msg}`,'_blank');}
-function copyLink(){const u=STATE.user;navigator.clipboard.writeText(`XitiqueMZ — código ${u.code}\n🔗 https://sasolmozambique-q0qu.onrender.com/`).then(()=>toast('Link copiado!','ok'));}
+function shareWA(){const u=STATE.user;const msg=encodeURIComponent(`🌟 Olá! Junta-te ao *XitiqueMZ* — clube de poupança digital!\n\n💰 Ganha 10% ao dia\n✅ Código: *${u.code}*\n🔗 https://xitiquemz-j2bx.onrender.com/`);window.open(`https://wa.me/?text=${msg}`,'_blank');}
+function copyLink(){const u=STATE.user;navigator.clipboard.writeText(`XitiqueMZ — código ${u.code}\n🔗 https://xitiquemz-j2bx.onrender.com/`).then(()=>toast('Link copiado!','ok'));}
 function copyCode(){navigator.clipboard.writeText(STATE.user.code).then(()=>toast('Código copiado!','ok'));}
 function contactSupport(){window.open('https://wa.me/258858167382?text=Olá, preciso de suporte XitiqueMZ','_blank');}
-function downloadAPK(){const a=document.createElement('a');a.href='https://drive.usercontent.google.com/download?id=1qRtJpGvhO3mfVsVqfLaMCVLpn0QZlIhP&export=download&confirm=t';a.download='XitiqueMZ.apk';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('A baixar APK XitiqueMZ... 📲','ok');}
+function downloadAPK(){const a=document.createElement('a');a.href='https://drive.usercontent.google.com/download?id=1iteMhW0_Y1cWBal3-NOf-HX7S540YXwi&export=download&confirm=t';a.download='XitiqueMZ.apk';document.body.appendChild(a);a.click();document.body.removeChild(a);toast('A baixar APK XitiqueMZ... 📲','ok');}
 function cpy(t){navigator.clipboard.writeText(t).then(()=>toast('Copiado!','ok'));}
 function fmt(n){return Number(n||0).toLocaleString('pt');}
 
