@@ -1052,13 +1052,11 @@ async function doRegister(){
   let refUser=null;
   if(rf){refUser=STATE.users.find(u=>u.code===rf);if(!refUser)return toast('Código de convite inválido','err');}
   const code='XIT-'+Math.random().toString(36).substr(2,5).toUpperCase();
-  const newUser={id:Date.now(),name:nm,phone:ph,pass:pw,code,balance:0,totalEarned:0,commission:0,level:0,activeDeposits:[],lastDailyPaid:0,taskDone:false,taskDate:'',refs:0,refsActive:0,refEarnings:0,joinDate:new Date().toLocaleDateString('pt'),joinTs:Date.now(),withdrawCount:0,totalWithdrawn:0};
+  const newUser={id:Date.now(),name:nm,phone:ph,pass:pw,code,balance:0,totalEarned:0,commission:0,level:0,activeDeposits:[],lastDailyPaid:0,taskDone:false,taskDate:'',refs:0,refsActive:0,refEarnings:0,joinDate:new Date().toLocaleDateString('pt'),joinTs:Date.now(),withdrawCount:0,totalWithdrawn:0,refCode:rf||null};
   await saveUserToFirebase(newUser);
   if(refUser){
     refUser.refs=(refUser.refs||0)+1;
-    refUser.balance+=150;refUser.commission+=150;refUser.totalEarned+=150;refUser.refEarnings=(refUser.refEarnings||0)+150;
-    await updateUserInFirebase(refUser.id,{refs:refUser.refs,balance:refUser.balance,commission:refUser.commission,totalEarned:refUser.totalEarned,refEarnings:refUser.refEarnings});
-    await saveDepositToFirebase({id:Date.now(),userId:refUser.id,userName:refUser.name,userPhone:refUser.phone,amount:REFERRAL_BONUS,method:'referral',status:'approved',date:Date.now(),isReward:true,isRef:true,note:`Comissão referido: ${nm}`});
+    await updateUserInFirebase(refUser.id,{refs:refUser.refs});
   }
   await loadFirebaseData();
   toast('Conta criada com sucesso! 🎉','ok');
@@ -1446,6 +1444,19 @@ async function appDep(id){
     if(d.isFirstDeposit)u.refsActive=(u.refsActive||0)+1;
     u.balance=(u.balance||0)+d.amount;u.lastDailyPaid=now;u.withdrawCount=0;
     await updateUserInFirebase(u.id,{level:u.level,refsActive:u.refsActive,withdrawCount:0,balance:u.balance,lastDailyPaid:u.lastDailyPaid});
+    // Dar bónus ao quem convidou apenas no primeiro depósito aprovado
+    const prevDeps=STATE.deposits.filter(dep=>dep.userId===u.id&&dep.status==='approved'&&!dep.isReward&&!dep.isRef&&dep.id!=id);
+    if(prevDeps.length===0&&u.refCode){
+      const refUser=STATE.users.find(r=>r.code===u.refCode);
+      if(refUser){
+        refUser.balance=(refUser.balance||0)+REFERRAL_BONUS;
+        refUser.commission=(refUser.commission||0)+REFERRAL_BONUS;
+        refUser.totalEarned=(refUser.totalEarned||0)+REFERRAL_BONUS;
+        refUser.refEarnings=(refUser.refEarnings||0)+REFERRAL_BONUS;
+        await updateUserInFirebase(refUser.id,{balance:refUser.balance,commission:refUser.commission,totalEarned:refUser.totalEarned,refEarnings:refUser.refEarnings});
+        await saveDepositToFirebase({id:Date.now(),userId:refUser.id,userName:refUser.name,userPhone:refUser.phone,amount:REFERRAL_BONUS,method:'referral',status:'approved',date:now,isReward:true,isRef:true,note:`Comissão referido: ${u.name}`});
+      }
+    }
   }
   await loadFirebaseData();adStats();renderAdContent();
   toast(`✓ ${u?u.name:''} — ${d.levelName} aprovado!`,'ok');
