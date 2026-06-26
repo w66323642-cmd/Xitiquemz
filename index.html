@@ -895,21 +895,10 @@ const LEVELS = [
   {id:4,name:'Nível 4',color:'lc4',deposit:2000,daily:200,minWithdraw:1000,maxWithdraw:2000,maxWeeks:6,durationDays:40},
   {id:5,name:'Nível 5',color:'lc5',deposit:3000,daily:300,minWithdraw:1500,maxWithdraw:3000,maxWeeks:6,durationDays:40}
 ];
+const MAX_WITHDRAWALS = 5;
 const REFERRAL_BONUS = 50;
-const PAYMENT_NAME_FULL = "Wilder Augusto";
 const PAYMENT_NAME_MASK = "Wil*** Aug*****";
-const PAYMENT_MPESA = "858 167 382";
-const PAYMENT_EMOLA = "875 073 208";
-
-// Retorna o número ISO da semana (ano+semana) para comparar
-function getWeekKey(ts){
-  const d=new Date(ts||Date.now());
-  d.setHours(0,0,0,0);
-  d.setDate(d.getDate()+4-(d.getDay()||7));
-  const y=d.getFullYear();
-  const w=Math.ceil(((d-new Date(y,0,1))/86400000+1)/7);
-  return `${y}-W${w}`;
-}
+function getWeekKey(ts){const d=new Date(ts||Date.now());d.setHours(0,0,0,0);d.setDate(d.getDate()+4-(d.getDay()||7));const y=d.getFullYear();const w=Math.ceil(((d-new Date(y,0,1))/86400000+1)/7);return `${y}-W${w}`;}
 const ADMIN_PW = 'admin2024';
 const STORAGE_KEY = 'xitiquemz_user_session';
 const GROUP_LINK = 'https://chat.whatsapp.com/Lp1sAEnjzZKDlYXeHfECD6';
@@ -1166,8 +1155,8 @@ function renderHomeNotice(lv){
     el.innerHTML=`<div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Activa o teu nível</strong> para começar a ganhar <strong>10%/dia</strong> e aceder às tarefas e saques.</p></div>`;
   }else{
     const wCount=STATE.user.withdrawCount||0;
-    const restantes=MAX_WITHDRAWALS-wCount;
-    el.innerHTML=`<div class="notice notice-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><p><strong>Saque mínimo: ${fmt(lv.minWithdraw)} MT</strong> · Saques ao fim de semana · 10%/dia activo · Restam <strong style="color:${restantes<=2?'var(--red)':'var(--gold)'}">${restantes}/${MAX_WITHDRAWALS}</strong> saques.</p></div>`;
+    const restantes=lv.maxWeeks-wCount;
+    el.innerHTML=`<div class="notice notice-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><p><strong>Saque mín: ${fmt(lv.minWithdraw)} MT · Máx: ${fmt(lv.maxWithdraw)} MT</strong> · 1 saque/fim de semana · Restam <strong style="color:${restantes<=2?'var(--red)':'var(--gold)'}">${restantes}/${lv.maxWeeks}</strong> semanas.</p></div>`;
   }
 }
 
@@ -1234,7 +1223,7 @@ function selectLevel(id){STATE.selLevel=LEVELS.find(l=>l.id===id);renderDepConfi
 
 function renderDepConfirm(){
   const l=STATE.selLevel;if(!l)return;
-  document.getElementById('dep-confirm-content').innerHTML=`<div class="dep-confirm-card"><div class="dep-confirm-lvl">${l.name} seleccionado</div><div class="dep-confirm-name">${l.name}</div><div class="dep-confirm-price">${fmt(l.deposit)}<span> MT</span></div><div class="dep-confirm-stats"><div><div class="dcs-l">Ganho Diário</div><div class="dcs-v" style="color:var(--green)">+${fmt(l.daily)} MT</div></div><div><div class="dcs-l">Saque Mínimo</div><div class="dcs-v">${fmt(l.minWithdraw)} MT</div></div><div><div class="dcs-l">Rendimento</div><div class="dcs-v" style="color:var(--gold)">10% / dia</div></div><div><div class="dcs-l">Saques</div><div class="dcs-v">Sáb & Dom</div></div></div></div><div class="rules-card"><h4>📋 Resumo das Regras</h4><div class="rule"><div class="rule-dot"></div><p>Depositando <strong>${fmt(l.deposit)} MT</strong>, o teu saldo activa rendimento de <strong>10% ao dia (${fmt(l.daily)} MT/dia)</strong>.</p></div><div class="rule"><div class="rule-dot"></div><p>O saque mínimo neste nível é de <strong>${fmt(l.minWithdraw)} MT</strong>.</p></div><div class="rule"><div class="rule-dot"></div><p>Saques disponíveis apenas aos <strong>Sábados e Domingos</strong>, 48h após aprovação.</p></div><div class="rule"><div class="rule-dot"></div><p>Só podes ter <strong>um nível activo</strong> de cada vez.</p></div><div class="rule"><div class="rule-dot" style="background:var(--gold)"></div><p>⚠ Após <strong>${MAX_WITHDRAWALS} saques</strong>, é obrigatório <strong>renovar o nível</strong>. O contador reinicia automaticamente.</p></div></div><button class="btn bg" onclick="proceedToPayment()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>Confirmar e Ver Pagamento</button><button class="btn bgh" style="margin-top:8px" onclick="goPage('pg-deposit')">← Voltar aos Níveis</button>`;
+  document.getElementById('dep-confirm-content').innerHTML=`<div class="dep-confirm-card"><div class="dep-confirm-lvl">${l.name} seleccionado</div><div class="dep-confirm-name">${l.name}</div><div class="dep-confirm-price">${fmt(l.deposit)}<span> MT</span></div><div class="dep-confirm-stats"><div><div class="dcs-l">Ganho Diário</div><div class="dcs-v" style="color:var(--green)">+${fmt(l.daily)} MT</div></div><div><div class="dcs-l">Saque Mín/Máx</div><div class="dcs-v">${fmt(l.minWithdraw)}–${fmt(l.maxWithdraw)} MT</div></div><div><div class="dcs-l">Prazo</div><div class="dcs-v" style="color:var(--gold)">${l.durationDays} dias</div></div><div><div class="dcs-l">Saques</div><div class="dcs-v">${l.maxWeeks} fins de semana</div></div></div></div><div class="rules-card"><h4>📋 Resumo das Regras</h4><div class="rule"><div class="rule-dot"></div><p>Depositando <strong>${fmt(l.deposit)} MT</strong>, o teu saldo activa rendimento de <strong>10% ao dia (${fmt(l.daily)} MT/dia)</strong>.</p></div><div class="rule"><div class="rule-dot"></div><p>Saque mínimo <strong>${fmt(l.minWithdraw)} MT</strong> e máximo <strong>${fmt(l.maxWithdraw)} MT</strong> por saque.</p></div><div class="rule"><div class="rule-dot"></div><p>Saques disponíveis <strong>1 vez por fim de semana</strong>, 48h após aprovação do depósito.</p></div><div class="rule"><div class="rule-dot"></div><p>Só podes ter <strong>um nível activo</strong> de cada vez.</p></div><div class="rule"><div class="rule-dot" style="background:var(--gold)"></div><p>⚠ Tens <strong>${l.maxWeeks} fins de semana</strong> para sacar dentro dos <strong>${l.durationDays} dias</strong> de prazo. Após isso, renova o nível.</p></div></div><button class="btn bg" onclick="proceedToPayment()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="17" height="17"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>Confirmar e Ver Pagamento</button><button class="btn bgh" style="margin-top:8px" onclick="goPage('pg-deposit')">← Voltar aos Níveis</button>`;
 }
 
 function proceedToPayment(){renderPayment();goPage('pg-dep-payment');}
@@ -1270,47 +1259,35 @@ async function submitDeposit(){
 function openWithdraw(){
   const u=STATE.user;const lv=LEVELS.find(l=>l.id===u.level);
   const el=document.getElementById('wth-info');
-  // Bloquear fora do fim de semana
   if(!isWeekend()){
-    const day=new Date().getDay();
-    const daysLeft=day===0?6:6-day;
-    el.innerHTML=`<div class="notice notice-red" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Saques indisponíveis hoje.</strong> Faltam ${daysLeft} dia${daysLeft>1?'s':''} para o próximo fim de semana.</p></div>`;
+    const day=new Date().getDay();const daysLeft=day===0?6:6-day;
+    el.innerHTML=`<div class="notice notice-red" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Saques indisponíveis hoje.</strong> Faltam ${daysLeft} dia${daysLeft>1?'s':''} para o próximo dia de saque (Sábado).</p></div>`;
     document.getElementById('mo-withdraw').classList.add('active');return;
   }
   if(!lv){
     el.innerHTML=`<div class="notice" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><p>Activa primeiro o teu nível para poder sacar.</p></div>`;
-    document.getElementById('mo-withdraw').classList.add('active');return;
+  }else{
+    const userDeps=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&d.approvedAt&&!d.isReward&&!d.isRef);
+    const earliest=userDeps.length?Math.min(...userDeps.map(d=>d.approvedAt)):0;
+    const hrs=earliest?((Date.now()-earliest)/3600000):0;
+    const hoursLeft=Math.max(0,Math.ceil(48-hrs));
+    const wCount=u.withdrawCount||0;
+    const maxWeeks=lv.maxWeeks;
+    const semanaAtual=getWeekKey(Date.now());
+    const jaSemanaSacou=u.lastWithdrawWeek===semanaAtual;
+    const semRestantes=maxWeeks-wCount;
+    const depBase=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&!d.isReward&&!d.isRef).sort((a,b)=>a.date-b.date)[0];
+    const expirou=depBase&&(Date.now()>depBase.date+(lv.durationDays*24*60*60*1000));
+    const alertColor=semRestantes<=1?'var(--red)':semRestantes<=2?'var(--gold)':'var(--green)';
+    const renovAlert=expirou
+      ?`<div class="notice notice-red" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Prazo expirado!</strong> Os 40 dias do ${lv.name} terminaram. Renova o nível.</p></div>`
+      :wCount>=maxWeeks
+      ?`<div class="notice notice-red" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Limite atingido!</strong> Já realizaste todos os saques do ${lv.name}. Renova o nível.</p></div>`
+      :jaSemanaSacou
+      ?`<div class="notice notice-red" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Já sacaste este fim de semana.</strong> Volta no próximo fim de semana.</p></div>`
+      :semRestantes<=2?`<div class="notice" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p>Restam apenas <strong>${semRestantes} saque(s)</strong> antes de precisares renovar.</p></div>`:'';
+    el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px"><div class="lim-stat"><div class="lim-stat-v">${fmt(lv.minWithdraw)} MT</div><div class="lim-stat-l">Mínimo</div></div><div class="lim-stat"><div class="lim-stat-v">${fmt(lv.maxWithdraw)} MT</div><div class="lim-stat-l">Máximo</div></div><div class="lim-stat"><div class="lim-stat-v" style="color:${alertColor}">${wCount}/${maxWeeks}</div><div class="lim-stat-l">Semanas usadas</div></div></div><div style="background:var(--surface2);border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:var(--text3)">📅 <strong style="color:var(--text)">Semana ${wCount+1} de ${maxWeeks}</strong> · 1 saque por fim de semana</div>${renovAlert}<div class="notice notice-green" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><p>✅ Hoje é fim de semana! Mín: <strong>${fmt(lv.minWithdraw)} MT</strong> · Máx: <strong>${fmt(lv.maxWithdraw)} MT</strong> · Saldo: <strong>${fmt(u.balance)} MT</strong>.</p></div>`;
   }
-  const wCount=u.withdrawCount||0;
-  const maxWeeks=lv.maxWeeks;
-  const semanaAtual=getWeekKey(Date.now());
-  const jaSemanaSacou=u.lastWithdrawWeek===semanaAtual;
-  const semRestantes=maxWeeks-wCount;
-  // Verificar prazo
-  const depBase=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&!d.isReward&&!d.isRef).sort((a,b)=>a.date-b.date)[0];
-  const expirou=depBase&&(Date.now()>depBase.date+(lv.durationDays*24*60*60*1000));
-  // Verificar 48h
-  const depAprov=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&d.approvedAt&&!d.isReward&&!d.isRef);
-  const earliest=depAprov.length?Math.min(...depAprov.map(d=>d.approvedAt)):0;
-  const hrs=earliest?((Date.now()-earliest)/3600000):0;
-  const hoursLeft=Math.max(0,Math.ceil(48-hrs));
-  const alertColor=semRestantes<=1?'var(--red)':semRestantes<=2?'var(--gold)':'var(--green)';
-  let alertHtml='';
-  if(expirou) alertHtml=`<div class="notice notice-red" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Prazo expirado!</strong> Os 40 dias do ${lv.name} terminaram. Renova o nível.</p></div>`;
-  else if(wCount>=maxWeeks) alertHtml=`<div class="notice notice-red" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Limite de semanas atingido!</strong> Usaste todos os ${maxWeeks} saques do ${lv.name}. Renova o nível.</p></div>`;
-  else if(jaSemanaSacou) alertHtml=`<div class="notice notice-red" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Já sacaste este fim de semana.</strong> O próximo saque é no próximo fim de semana.</p></div>`;
-  else if(semRestantes<=2) alertHtml=`<div class="notice" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p>Restam <strong>${semRestantes} fim(ns) de semana</strong> de saque neste nível.</p></div>`;
-  el.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
-      <div class="lim-stat"><div class="lim-stat-v">${fmt(lv.minWithdraw)} MT</div><div class="lim-stat-l">Mínimo</div></div>
-      <div class="lim-stat"><div class="lim-stat-v">${fmt(lv.maxWithdraw)} MT</div><div class="lim-stat-l">Máximo</div></div>
-      <div class="lim-stat"><div class="lim-stat-v" style="color:${alertColor}">${wCount}/${maxWeeks}</div><div class="lim-stat-l">Semanas usadas</div></div>
-    </div>
-    <div style="background:var(--surface2);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text3)">
-      📅 <strong style="color:var(--text)">Semana ${wCount+1} de ${maxWeeks}</strong> — 1 saque por fim de semana · ${hoursLeft===0?'<span style="color:var(--green)">48h OK</span>':`<span style="color:var(--gold)">${hoursLeft}h restantes</span>`}
-    </div>
-    ${alertHtml}
-    ${(!expirou&&wCount<maxWeeks&&!jaSemanaSacou)?`<div class="notice notice-green" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><p>✅ Podes sacar este fim de semana! Mín: <strong>${fmt(lv.minWithdraw)} MT</strong> · Máx: <strong>${fmt(lv.maxWithdraw)} MT</strong> · Saldo: <strong>${fmt(u.balance)} MT</strong></p></div>`:''}`;
   document.getElementById('mo-withdraw').classList.add('active');
 }
 
@@ -1321,30 +1298,26 @@ async function submitWithdraw(){
   const ph=document.getElementById('w-ph').value.trim();
   if(!isWeekend())return toast('Saques disponíveis apenas ao fim de semana','err');
   if(!lv)return toast('Activa um nível primeiro','err');
-  if(!amt||amt<lv.minWithdraw)return toast(`Mínimo de saque é ${fmt(lv.minWithdraw)} MT`,'err');
-  if(amt>lv.maxWithdraw)return toast(`Máximo de saque é ${fmt(lv.maxWithdraw)} MT`,'err');
+  if(!amt||amt<lv.minWithdraw)return toast(`Mínimo é ${fmt(lv.minWithdraw)} MT`,'err');
+  if(lv.maxWithdraw&&amt>lv.maxWithdraw)return toast(`Máximo por saque é ${fmt(lv.maxWithdraw)} MT`,'err');
   if(amt>u.balance)return toast('Saldo insuficiente','err');
   if(!ph)return toast('Indica o número para receber','err');
-  // Verificar 1 saque por semana
-  const semanaAtual=getWeekKey(Date.now());
-  if(u.lastWithdrawWeek===semanaAtual){closeMo('mo-withdraw');toast('Já sacaste este fim de semana. Volta no próximo.','err');return;}
-  // Verificar limite de semanas do nível
   const wCount=u.withdrawCount||0;
   if(wCount>=lv.maxWeeks){closeMo('mo-withdraw');toast(`⚠ Limite de ${lv.maxWeeks} saques do ${lv.name} atingido. Renova o nível.`,'err');setTimeout(()=>goDeposit(),1500);return;}
-  // Verificar prazo de 40 dias
+  const semanaAtual=getWeekKey(Date.now());
+  if(u.lastWithdrawWeek===semanaAtual){closeMo('mo-withdraw');toast('Já sacaste este fim de semana. Volta no próximo.','err');return;}
   const depBase=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&!d.isReward&&!d.isRef).sort((a,b)=>a.date-b.date)[0];
   if(depBase){const expiry=depBase.date+(lv.durationDays*24*60*60*1000);if(Date.now()>expiry){closeMo('mo-withdraw');toast(`⏰ Prazo de 40 dias do ${lv.name} expirou. Renova o nível.`,'err');setTimeout(()=>goDeposit(),1500);return;}}
-  // Verificar 48h após aprovação
-  const depAprov=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&d.approvedAt&&!d.isReward&&!d.isRef);
-  if(!depAprov.length)return toast('Nenhum depósito aprovado ainda','err');
-  const earliest=Math.min(...depAprov.map(d=>d.approvedAt));
+  const userDeps=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&d.approvedAt&&!d.isReward&&!d.isRef);
+  if(!userDeps.length)return toast('Nenhum depósito aprovado ainda','err');
+  const earliest=Math.min(...userDeps.map(d=>d.approvedAt));
   const hrs=(Date.now()-earliest)/3600000;
-  if(hrs<48){const h=Math.ceil(48-hrs);return toast(`Aguarda mais ${h}h após aprovação para sacar`,'err');}
+  if(hrs<48){const h=Math.ceil(48-hrs);return toast(`Aguarda mais ${h}h para sacar`,'err');}
   const withdrawal={id:Date.now(),userId:u.id,userName:u.name,userPhone:u.phone,amount:amt,method,toPhone:ph,status:'pending',date:Date.now()};
   await saveWithdrawalToFirebase(withdrawal);
-  u.withdrawCount=(u.withdrawCount||0)+1;
-  u.lastWithdrawWeek=semanaAtual;
-  await updateUserInFirebase(u.id,{withdrawCount:u.withdrawCount,lastWithdrawWeek:semanaAtual});
+  u.withdrawCount=wCount+1;
+  u.lastWithdrawWeek=getWeekKey(Date.now());
+  await updateUserInFirebase(u.id,{withdrawCount:u.withdrawCount,lastWithdrawWeek:u.lastWithdrawWeek});
   closeMo('mo-withdraw');await loadFirebaseData();renderApp();
   toast(`Pedido de saque ${fmt(amt)} MT enviado! ✓`,'ok');
 }
@@ -1398,7 +1371,7 @@ function renderFeed(){
   const actions=[
     {t:'💰 {n} fez um depósito de {a} MT',a:()=>LEVELS[Math.floor(Math.random()*LEVELS.length)].deposit},
     {t:'🎉 {n} sacou {a} MT com sucesso',a:()=>Math.floor(Math.random()*5+1)*150},
-    {t:'👥 {n} convidou um amigo e ganhou 50 MT',a:()=>150},
+    {t:'👥 {n} convidou um amigo e ganhou 50 MT',a:()=>50},
   ];
   const items=Array.from({length:4},()=>{
     const act=actions[Math.floor(Math.random()*actions.length)];
@@ -1456,7 +1429,7 @@ function renderAdContent(){
     el.innerHTML=wths.map(w=>`<div class="adcard"><div class="adcard-top"><div><div class="adcard-name">${w.userName}</div><div class="adcard-sub">+258 ${w.userPhone} · ${w.method?.toUpperCase()||'—'}</div><div class="adcard-sub">Para: +258 ${w.toPhone}</div><div class="adcard-sub">${new Date(w.date).toLocaleString('pt')}</div></div><div style="text-align:right"><div class="adcard-amt">${fmt(w.amount)} MT</div><div class="ad-badge ab-${w.status==='pending'?'p':w.status==='approved'?'a':'r'}" style="margin-top:6px">${w.status==='pending'?'Pendente':w.status==='approved'?'Aprovado':'Rejeitado'}</div></div></div>${w.status==='pending'?`<div class="adcard-btns"><button class="btn bgreen" onclick="appWth('${w.id}')">✓ Aprovar</button><button class="btn br" onclick="rejWth('${w.id}')">✗ Rejeitar</button></div>`:''}</div>`).join('');
   }else if(currentAdTab==='users'){
     if(!STATE.users.length){el.innerHTML=`<div class="empty"><p>Sem utilizadores</p></div>`;return;}
-    el.innerHTML=STATE.users.sort((a,b)=>b.joinTs-a.joinTs).map(u=>`<div class="adcard"><div class="adcard-top"><div><div class="adcard-name">${u.name}</div><div class="adcard-sub">+258 ${u.phone} · ${u.code}</div><div class="adcard-sub">Entrou: ${u.joinDate} · Nível: ${u.level||'Sem nível'}</div></div><div style="text-align:right"><div class="adcard-amt">${fmt(u.balance)} MT</div><div style="font-size:10px;color:var(--text3);margin-top:4px">${u.refs||0} refs · ${u.withdrawCount||0}/${MAX_WITHDRAWALS} saques</div></div></div></div>`).join('');
+    el.innerHTML=STATE.users.sort((a,b)=>b.joinTs-a.joinTs).map(u=>{const ulv=LEVELS.find(l=>l.id===u.level);return`<div class="adcard"><div class="adcard-top"><div><div class="adcard-name">${u.name}</div><div class="adcard-sub">+258 ${u.phone} · ${u.code}</div><div class="adcard-sub">Entrou: ${u.joinDate} · Nível: ${u.level||'Sem nível'}</div></div><div style="text-align:right"><div class="adcard-amt">${fmt(u.balance)} MT</div><div style="font-size:10px;color:var(--text3);margin-top:4px">${u.refs||0} refs · ${u.withdrawCount||0}/${ulv?ulv.maxWeeks:'–'} saques</div></div></div></div>`}).join('');
   }else{
     const news=STATE.deposits.filter(d=>d.status==='pending'&&d.levelName).sort((a,b)=>b.date-a.date);
     if(!news.length){el.innerHTML=`<div class="empty"><p>Sem novas adesões pendentes</p></div>`;return;}
