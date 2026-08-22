@@ -1119,21 +1119,30 @@ async function doLogin(){
     if(btn){btn.disabled=false;btn.textContent='→ Entrar na Conta';}
     return toast('Sem ligação ao servidor. Abre o site pelo link oficial.','err');
   }
+  // Tudo daqui pra baixo corre num try/finally — o botão NUNCA fica preso,
+  // seja qual for o erro (timeout, dados corrompidos, etc).
   try{
-    await Promise.race([loadFirebaseData(),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),6000))]);
+    try{
+      await Promise.race([loadFirebaseData(),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),6000))]);
+    }catch(e){
+      console.error('Login: falha ao carregar dados do Firebase —',e);
+      return toast('Ligação lenta. Verifica a internet e tenta de novo.','err');
+    }
+    // Match phone normalised on both sides — String() evita crash se algum
+    // registo tiver phone/pass num formato inesperado (ex: número em vez de texto)
+    const u=STATE.users.find(u=>{
+      const savedPh=String(u.phone||'').replace(/[\s\-]/g,'').replace(/^(\+?258)/,'');
+      return savedPh===ph&&String(u.pass||'')===pw;
+    });
+    if(!u)return toast('Número ou senha incorrectos','err');
+    saveSession(u.id,u.phone,remember);
+    loginUser(u);
   }catch(e){
+    console.error('Login: erro inesperado —',e);
+    toast('Erro ao entrar. Tenta novamente.','err');
+  }finally{
     if(btn){btn.disabled=false;btn.textContent='→ Entrar na Conta';}
-    return toast('Ligação lenta. Verifica a internet e tenta de novo.','err');
   }
-  // Match phone normalised on both sides
-  const u=STATE.users.find(u=>{
-    const savedPh=(u.phone||'').replace(/[\s\-]/g,'').replace(/^(\+?258)/,'');
-    return savedPh===ph&&u.pass===pw;
-  });
-  if(btn){btn.disabled=false;btn.textContent='→ Entrar na Conta';}
-  if(!u)return toast('Número ou senha incorrectos','err');
-  saveSession(u.id,u.phone,remember);
-  loginUser(u);
 }
 
 async function loginUser(u){
