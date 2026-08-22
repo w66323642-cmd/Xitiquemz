@@ -1147,11 +1147,21 @@ async function doLogin(){
 
 async function loginUser(u){
   STATE.user=u;
-  renderApp();
-  showScreen('sapp');
-  goPage('pg-home');
-  startCountdown();
-  startFeed();
+  try{
+    renderApp();
+    showScreen('sapp');
+    goPage('pg-home');
+    startCountdown();
+    startFeed();
+  }catch(e){
+    // Se algo falhar ao desenhar o app, nunca deixar a tela em branco —
+    // volta ao login e mostra o erro real no console para diagnóstico.
+    console.error('Erro ao carregar o app —', e);
+    STATE.user=null;
+    showScreen('sa');
+    toast('Erro ao carregar a conta. Tenta entrar novamente.','err');
+    return;
+  }
   // Apply daily earnings in background without blocking login
   try{ await applyDailyEarnings(u); }catch(e){ console.warn('Earnings error:',e); }
 }
@@ -1222,7 +1232,10 @@ function renderHomeNotice(lv){
   if(!lv){
     el.innerHTML=`<div class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><p><strong>Activa o teu VIP</strong> para começar a ganhar <strong>20%/dia</strong> e aceder às tarefas e saques.</p></div>`;
   }else{
-    const wCount=STATE.user.withdrawCount||0;
+    const u=STATE.user;
+    const wCount=u.withdrawCount||0;
+    const depBase=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&!d.isReward&&!d.isRef).sort((a,b)=>a.date-b.date)[0];
+    const daysLeft=depBase?Math.max(0,Math.ceil(((depBase.date+(lv.durationDays*24*60*60*1000))-Date.now())/(1000*60*60*24))):null;
     el.innerHTML=`<div class="notice notice-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><p><strong>VIP activo: ${lv.name}</strong> · 20%/dia · Lucro total: <strong style="color:var(--gold)">${fmt(lv.totalProfit)} MT</strong> em ${lv.durationDays} dias${depBase?(` · <strong style="color:${daysLeft===0?'var(--green)':'var(--gold)'}">Dia ${lv.durationDays-daysLeft}/${lv.durationDays}</strong>`):''}</p></div>`;
   }
 }
