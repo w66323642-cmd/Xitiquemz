@@ -725,10 +725,10 @@ html{overscroll-behavior:none}
       <div class="cf-card"><h4>📋 Visão Geral</h4>
         <div class="cf-step"><div class="cf-num">1</div><div class="cf-txt">Regista-te com nome, telemóvel e senha. É gratuito e rápido.</div></div>
         <div class="cf-step"><div class="cf-num">2</div><div class="cf-txt">Escolhe um <strong>VIP de depósito</strong> (VIP 1 a 6) e efectua o pagamento via M-Pesa ou e-Mola.</div></div>
-        <div class="cf-step"><div class="cf-num">3</div><div class="cf-txt">Após aprovação, o teu saldo é activado com <strong>20% de rendimento diário automático</strong>.</div></div>
+        <div class="cf-step"><div class="cf-num">3</div><div class="cf-txt">Em até <strong>4 minutos</strong>, o teu saldo é activado com <strong>20% de rendimento diário automático</strong>.</div></div>
         <div class="cf-step"><div class="cf-num">4</div><div class="cf-txt">Completa a <strong>tarefa diária</strong> (partilhar o link) para ganhar bónus extra de 30 MT.</div></div>
         <div class="cf-step"><div class="cf-num">5</div><div class="cf-txt">Convida amigos e ganha <strong>50 MT de comissão</strong> por cada referido activo.</div></div>
-        <div class="cf-step"><div class="cf-num">6</div><div class="cf-txt">O saque fica disponível no <strong>último dia do teu pacote VIP</strong>, após liberação pelo admin.</div></div>
+        <div class="cf-step"><div class="cf-num">6</div><div class="cf-txt">O saque fica disponível <strong>automaticamente no último dia</strong> do teu pacote VIP.</div></div>
         <div class="cf-step"><div class="cf-num">7</div><div class="cf-txt">Cada VIP permite <strong>1 saque único</strong> no último dia do pacote.</div></div>
       </div>
       <div class="cf-card"><h4>🏆 Tabela de VIPs</h4>
@@ -744,15 +744,41 @@ html{overscroll-behavior:none}
       </div>
       <div class="cf-card"><h4>📅 Quando Sacar</h4>
         <div class="cf-step"><div class="cf-num" style="background:var(--green);color:#000">✓</div><div class="cf-txt">O saque é feito <strong>apenas no último dia</strong> do teu pacote VIP.</div></div>
-        <div class="cf-step"><div class="cf-num" style="background:var(--gold);color:#000">!</div><div class="cf-txt">O valor a sacar é o <strong>lucro total acumulado</strong> de todo o período.</div></div>
+        <div class="cf-step"><div class="cf-num" style="background:var(--gold);color:#000">!</div><div class="cf-txt">O valor a sacar é o <strong>lucro total acumulado</strong> de todo o período — processado em até 4 minutos.</div></div>
       </div>
       <div class="cf-card"><h4>💰 Regras de Saque</h4>
         <div class="cf-step"><div class="cf-num">1</div><div class="cf-txt">O saque só fica disponível <strong>no último dia do pacote VIP</strong>.</div></div>
         <div class="cf-step"><div class="cf-num">2</div><div class="cf-txt">Apenas <strong>1 saque por pacote</strong> — do lucro total acumulado.</div></div>
-        <div class="cf-step"><div class="cf-num">3</div><div class="cf-txt">Cada pedido de saque passa por <strong>aprovação manual</strong> do admin.</div></div>
-        <div class="cf-step"><div class="cf-num">4</div><div class="cf-txt">Recebe directamente no <strong>M-Pesa ou e-Mola</strong> que indicares.</div></div>
+        <div class="cf-step"><div class="cf-num">3</div><div class="cf-txt">O teu saque é processado em <strong>até 4 minutos</strong> directamente no M-Pesa ou e-Mola.</div></div>
+        <div class="cf-step"><div class="cf-num">4</div><div class="cf-txt">Recebes directamente no <strong>M-Pesa ou e-Mola</strong> em até <strong>4 minutos</strong>.</div></div>
         <div class="cf-step"><div class="cf-num" style="background:var(--gold);color:#000">⚠</div><div class="cf-txt">Após o saque, renova o teu VIP para continuar a ganhar.</div></div>
       </div>
+    </div>
+  </div>
+
+  <!-- FIRST TIME POPUP -->
+  <div id="mo-firsttime" class="mo" style="z-index:9999">
+    <div class="mo-box" style="max-height:85vh;overflow-y:auto">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:32px">👋</div>
+        <div style="font-family:Sora,sans-serif;font-size:18px;font-weight:800;color:var(--gold);margin-top:8px">Bem-vindo ao XitiqueMZ!</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">Lê as regras antes de começar</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:12px;padding:14px;margin-bottom:10px">
+        <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px">📋 COMO FUNCIONA</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text)">
+          <div>💰 <strong>Deposita</strong> e activa o teu VIP — confirmado em até <strong>4 minutos</strong></div>
+          <div>📈 Ganhas <strong>20% ao dia</strong> automaticamente durante os dias do teu pacote</div>
+          <div>🎁 Entraste por convite? Tens <strong>50 MT de bónus</strong> na tua conta</div>
+          <div>📅 Saque disponível <strong>automaticamente no último dia</strong> do pacote</div>
+          <div>⚡ Saque processado em <strong>até 4 minutos</strong> no M-Pesa ou e-Mola</div>
+          <div>👥 Convida amigos e ganha <strong>50 MT por cada um</strong> que depositar</div>
+        </div>
+      </div>
+      <div style="background:var(--gold-light);border:1px solid var(--gold-border);border-radius:12px;padding:12px;margin-bottom:14px">
+        <div style="font-size:11px;color:var(--text2)">⚠️ O bónus de convite só pode ser sacado com um <strong>VIP activo</strong>. Activa o teu VIP para desbloquear tudo.</div>
+      </div>
+      <button class="btn bg" style="width:100%" onclick="closeFirstTime()">Entendido, vamos começar! 🚀</button>
     </div>
   </div>
 
@@ -776,11 +802,7 @@ html{overscroll-behavior:none}
           <div class="pmi-tx"><div class="pmi-t">Carteira e Histórico</div><div class="pmi-s">Todas as movimentações</div></div>
           <div class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></div>
         </div>
-        <div class="pmi" onclick="goPage('pg-como')">
-          <div class="pmi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
-          <div class="pmi-tx"><div class="pmi-t">Como Funciona</div><div class="pmi-s">Guia completo da plataforma</div></div>
-          <div class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></div>
-        </div>
+
       </div>
       <div class="pmenu" style="margin:0 16px 12px">
         <div class="pmtitle">Comunidade & Suporte</div>
@@ -1143,6 +1165,28 @@ async function doLogin(){
   }
 }
 
+function closeFirstTime(){
+  document.getElementById('mo-firsttime').classList.remove('active');
+  localStorage.setItem('xmz_seen_how','1');
+}
+
+async function checkAutoRelease(u){
+  if(!u||!u.level||u.withdrawalReleased||u.withdrawCount>=1)return;
+  const lv=LEVELS.find(l=>l.id==u.level);
+  if(!lv)return;
+  const depBase=STATE.deposits.filter(d=>d.userId===u.id&&d.status==='approved'&&d.approvedAt&&!d.isReward&&!d.isRef).sort((a,b)=>a.date-b.date)[0];
+  if(!depBase)return;
+  const expired=Date.now()>=depBase.date+(lv.durationDays*24*60*60*1000);
+  if(expired){
+    u.withdrawalReleased=true;
+    STATE.user=u;
+    await updateUserInFirebase(u.id,{withdrawalReleased:true});
+    renderApp();
+    renderWeekendBar();
+    toast('🎉 O teu saque está disponível! Podes sacar agora.','ok');
+  }
+}
+
 async function loginUser(u){
   STATE.user=u;
   try{
@@ -1152,16 +1196,20 @@ async function loginUser(u){
     startCountdown();
     startFeed();
   }catch(e){
-    // Se algo falhar ao desenhar o app, nunca deixar a tela em branco —
-    // volta ao login e mostra o erro real no console para diagnóstico.
     console.error('Erro ao carregar o app —', e);
     STATE.user=null;
     showScreen('sa');
     toast('Erro ao carregar a conta. Tenta entrar novamente.','err');
     return;
   }
-  // Apply daily earnings in background without blocking login
+  // First-time popup for new users
+  if(!localStorage.getItem('xmz_seen_how')){
+    setTimeout(()=>document.getElementById('mo-firsttime').classList.add('active'),800);
+  }
+  // Apply daily earnings in background
   try{ await applyDailyEarnings(u); }catch(e){ console.warn('Earnings error:',e); }
+  // Auto-release withdrawal if days expired
+  try{ await checkAutoRelease(u); }catch(e){ console.warn('AutoRelease error:',e); }
 }
 
 function doLogout(){
@@ -1410,7 +1458,7 @@ function startCountdown(){
     const u=STATE.user;const el=document.getElementById('d-countdown');if(!el)return;
     if(!u||!u.lastDailyPaid){el.textContent='—';return;}
     const now=Date.now();const next=u.lastDailyPaid+(24*60*60*1000);const diff=next-now;
-    if(diff<=0&&!earningProcessing){earningProcessing=true;el.textContent='A creditar...';applyDailyEarnings(u).then(()=>{earningProcessing=false;});return;}
+    if(diff<=0&&!earningProcessing){earningProcessing=true;el.textContent='A creditar...';applyDailyEarnings(u).then(()=>{earningProcessing=false;checkAutoRelease(STATE.user).catch(()=>{});});return;}
     if(diff<=0){el.textContent='A creditar...';return;}
     const h=Math.floor(diff/3600000);const m=Math.floor((diff%3600000)/60000);const s=Math.floor((diff%60000)/1000);
     el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
